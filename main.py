@@ -76,6 +76,7 @@ async def main():
             user.username,
             user.full_name,
             city_code,
+            city_code,  # Значення для оновлення city
             user.username,
             user.full_name,
         ),
