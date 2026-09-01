@@ -22,7 +22,6 @@ cursor.execute(
     """
     CREATE TABLE IF NOT EXISTS users (
         user_id INTEGER PRIMARY KEY,
-        username TEXT,
         full_name TEXT,
         city TEXT
     )
@@ -82,15 +81,13 @@ async def main():
 
     if row:
       cursor.execute(
-          "UPDATE users SET city = ?, username = ?, full_name = ? WHERE user_id"
-          " = ?",
-          (city_code, user.username, user.full_name, user.id),
+          "UPDATE users SET city = ?, full_name = ? WHERE user_id = ?",
+          (city_code, user.full_name, user.id),
       )
     else:
       cursor.execute(
-          "INSERT INTO users (user_id, username, full_name, city) VALUES (?, ?,"
-          " ?, ?)",
-          (user.id, user.username, user.full_name, city_code),
+          "INSERT INTO users (user_id, full_name, city) VALUES (?, ?, ?)",
+          (user.id, user.full_name, city_code),
       )
     conn.commit()
 
@@ -120,8 +117,7 @@ async def main():
     city_name = CITIES[city_code]
 
     cursor.execute(
-        "SELECT user_id, username, full_name FROM users WHERE city = ?",
-        (city_code,),
+        "SELECT user_id, full_name FROM users WHERE city = ?", (city_code,)
     )
     rows = cursor.fetchall()
 
@@ -132,12 +128,9 @@ async def main():
       return
 
     mentions = []
-    for user_id, username, full_name in rows:
-      if username:
-        mentions.append(f"@{username}")
-      else:
-        safe_name = html.escape(full_name or "Користувач")
-        mentions.append(f'<a href="tg://user?id={user_id}">{safe_name}</a>')
+    for user_id, full_name in rows:
+      safe_name = html.escape(full_name or "Користувач")
+      mentions.append(f'<a href="tg://user?id={user_id}">{safe_name}</a>')
 
     chunk_size = 10
     for i in range(0, len(mentions), chunk_size):
@@ -154,4 +147,3 @@ async def main():
 
 if __name__ == "__main__":
   asyncio.run(main())
-    
