@@ -1,4 +1,5 @@
 import asyncio
+import html
 import os
 import sqlite3
 from aiogram import Bot, Dispatcher, F
@@ -40,9 +41,12 @@ ALIASES = {
     "kryvyirih": "kryvyi_rih",
     "кривийріг": "kryvyi_rih",
     "кривий_ріг": "kryvyi_rih",
+    "kyiv": "kyiv",
     "київ": "kyiv",
     "киив": "kyiv",
+    "kaniv": "kaniv",
     "канів": "kaniv",
+    "pavlohrad": "pavlohrad",
     "павлоград": "pavlohrad",
 }
 
@@ -91,9 +95,9 @@ async def main():
     conn.commit()
 
     await callback.message.edit_text(
-        f"✅ Твоє місто успішно збережено: **{city_name}**.\nЯкщо захочеш"
+        f"✅ Твоє місто успішно збережено: <b>{city_name}</b>.\nЯкщо захочеш"
         " змінити — просто напиши /start боту знову.",
-        parse_mode="Markdown",
+        parse_mode="HTML",
     )
     await callback.answer()
 
@@ -132,21 +136,22 @@ async def main():
       if username:
         mentions.append(f"@{username}")
       else:
-        safe_name = full_name.replace("[", "").replace("]", "")
-        mentions.append(f"[{safe_name}](tg://user?id={user_id})")
+        safe_name = html.escape(full_name or "Користувач")
+        mentions.append(f'<a href="tg://user?id={user_id}">{safe_name}</a>')
 
     chunk_size = 10
     for i in range(0, len(mentions), chunk_size):
       chunk = " ".join(mentions[i : i + chunk_size])
       await message.answer(
-          f"📢 Збір для мешканців **{city_name}**:\n{chunk}",
-          parse_mode="Markdown",
+          f"📢 Збір для мешканців <b>{city_name}</b>:\n{chunk}",
+          parse_mode="HTML",
       )
 
   print("Бот запущено на сервері!")
+  await bot.delete_webhook(drop_pending_updates=True)
   await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
   asyncio.run(main())
-      
+    
