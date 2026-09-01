@@ -5,6 +5,7 @@ import sqlite3
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import (
+    BotCommand,
     CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -62,6 +63,14 @@ def get_cities_keyboard():
 async def main():
   bot = Bot(token=TOKEN)
   dp = Dispatcher()
+
+  commands = [
+      BotCommand(command="kyiv", description="Збір для мешканців Київ"),
+      BotCommand(command="kaniv", description="Збір для мешканців Канів"),
+      BotCommand(command="pavlohrad", description="Збір для мешканців Павлоград"),
+      BotCommand(command="kryvyi_rih", description="Збір для мешканців Кривий Ріг"),
+  ]
+  await bot.set_my_commands(commands)
 
   @dp.message(CommandStart(), F.chat.type == "private")
   async def cmd_start(message: Message):
@@ -147,3 +156,4 @@ async def main():
 
 if __name__ == "__main__":
   asyncio.run(main())
+    
