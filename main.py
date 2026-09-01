@@ -65,22 +65,22 @@ async def main():
     city_name = CITIES.get(city_code, "Невідомо")
     user = callback.from_user
 
-    cursor.execute(
-        """
-            INSERT INTO users (user_id, username, full_name, city) 
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT(user_id) DO UPDATE SET city=?, username=?, full_name=?
-        """,
-        (
-            user.id,
-            user.username,
-            user.full_name,
-            city_code,
-            city_code,  # Значення для оновлення city
-            user.username,
-            user.full_name,
-        ),
-    )
+    # Проста та надійна логіка: оновлюємо або створюємо запис
+    cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user.id,))
+    row = cursor.fetchone()
+
+    if row:
+      cursor.execute(
+          "UPDATE users SET city = ?, username = ?, full_name = ? WHERE user_id"
+          " = ?",
+          (city_code, user.username, user.full_name, user.id),
+      )
+    else:
+      cursor.execute(
+          "INSERT INTO users (user_id, username, full_name, city) VALUES (?, ?,"
+          " ?, ?)",
+          (user.id, user.username, user.full_name, city_code),
+      )
     conn.commit()
 
     await callback.message.edit_text(
@@ -142,3 +142,4 @@ async def main():
 
 if __name__ == "__main__":
   asyncio.run(main())
+      
