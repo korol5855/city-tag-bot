@@ -36,7 +36,15 @@ CITIES = {
     "kryvyi_rih": "Кривий Ріг",
 }
 
-ALIASES = {"kryvyirih": "kryvyi_rih"}
+ALIASES = {
+    "kryvyirih": "kryvyi_rih",
+    "кривийріг": "kryvyi_rih",
+    "кривий_ріг": "kryvyi_rih",
+    "київ": "kyiv",
+    "киив": "kyiv",
+    "канів": "kaniv",
+    "павлоград": "pavlohrad",
+}
 
 
 def get_cities_keyboard():
@@ -141,3 +149,4 @@ async def main():
 
 if __name__ == "__main__":
   asyncio.run(main())
+      
