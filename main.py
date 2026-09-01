@@ -1,5 +1,4 @@
 import asyncio
-import html
 import os
 import sqlite3
 from aiogram import Bot, Dispatcher, F
@@ -10,6 +9,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     Message,
 )
+from aiogram.utils.formatting import Bold, Link, as_list
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -46,7 +46,7 @@ ALIASES = {
     "kaniv": "kaniv",
     "канів": "kaniv",
     "pavlohrad": "pavlohrad",
-    "павлоград": "pavlohrad",
+    "павлоград": "павлоград",
 }
 
 
@@ -127,18 +127,19 @@ async def main():
       )
       return
 
-    mentions = []
+    content = []
     for user_id, full_name in rows:
-      safe_name = html.escape(full_name or "Користувач")
-      mentions.append(f'<a href="tg://user?id={user_id}">{safe_name}</a>')
+      name = full_name or "Користувач"
+      content.append(Link(name, url=f"tg://user?id={user_id}"))
 
     chunk_size = 10
-    for i in range(0, len(mentions), chunk_size):
-      chunk = " ".join(mentions[i : i + chunk_size])
-      await message.answer(
-          f"📢 Збір для мешканців <b>{city_name}</b>:\n{chunk}",
-          parse_mode="HTML",
+    for i in range(0, len(content), chunk_size):
+      chunk_items = content[i : i + chunk_size]
+      text_obj = as_list(
+          Bold(f"📢 Збір для мешканців {city_name}:"),
+          as_list(*chunk_items, sep=" "),
       )
+      await message.answer(**text_obj.as_kwargs())
 
   print("Бот запущено на сервері!")
   await bot.delete_webhook(drop_pending_updates=True)
