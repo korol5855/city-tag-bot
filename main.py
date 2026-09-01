@@ -65,7 +65,6 @@ async def main():
     city_name = CITIES.get(city_code, "Невідомо")
     user = callback.from_user
 
-    # Проста та надійна логіка: оновлюємо або створюємо запис
     cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user.id,))
     row = cursor.fetchone()
 
@@ -142,4 +141,3 @@ async def main():
 
 if __name__ == "__main__":
   asyncio.run(main())
-      
